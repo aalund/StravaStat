@@ -203,6 +203,29 @@ def render(result: dict) -> str:
     return "\n".join(lines)
 
 
+def print_auth_guidance(exc: StravaError) -> None:
+    if "read_permission" not in str(exc):
+        return
+    client_id = os.environ.get("STRAVA_CLIENT_ID", "YOUR_CLIENT_ID")
+    authorize_url = (
+        "https://www.strava.com/oauth/authorize"
+        f"?client_id={client_id}&response_type=code"
+        "&approval_prompt=force&scope=activity:read_all"
+    )
+    print(
+        "Refresh tokenet mangler tilladelsen activity:read_all.\n"
+        "Sadan fikser du det:\n"
+        "  1. Abner dette link i browseren og godkend: " + authorize_url + "\n"
+        "  2. Byt `code` fra redirect-URL'en til et nyt token:\n"
+        "     curl -X POST https://www.strava.com/oauth/token \\\n"
+        "       -d client_id=... -d client_secret=... \\\n"
+        "       -d code=KODEN -d grant_type=authorization_code\n"
+        "  3. Erstat STRAVA_REFRESH_TOKEN (lokal shell eller GitHub secret) "
+        "med `refresh_token` fra svaret.",
+        file=sys.stderr,
+    )
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="stravastat",
@@ -238,6 +261,7 @@ def main(argv: list[str] | None = None) -> int:
         print(f"Mangler miljo-variable: {exc.args[0]}", file=sys.stderr)
         return 2
     except StravaError as exc:
+        print_auth_guidance(exc)
         print(f"Strava-fejl: {exc}", file=sys.stderr)
         return 1
 
