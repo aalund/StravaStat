@@ -1,0 +1,39 @@
+name: FTP recommendation job
+
+on:
+  schedule:
+    - cron: "0 6 * * *"
+  workflow_dispatch:
+
+jobs:
+  ftp:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+
+      - name: Install dependencies
+        run: pip install -r requirements.txt
+
+      - name: Run FTP job
+        env:
+          STRAVA_CLIENT_ID: ${{ secrets.STRAVA_CLIENT_ID }}
+          STRAVA_CLIENT_SECRET: ${{ secrets.STRAVA_CLIENT_SECRET }}
+          STRAVA_REFRESH_TOKEN: ${{ secrets.STRAVA_REFRESH_TOKEN }}
+        run: |
+          if [ -z "$STRAVA_CLIENT_ID" ] || [ -z "$STRAVA_CLIENT_SECRET" ] || [ -z "$STRAVA_REFRESH_TOKEN" ]; then
+            echo "::notice::Strava secrets are not configured - add STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET and STRAVA_REFRESH_TOKEN to repository secrets."
+            exit 0
+          fi
+          mkdir -p report
+          python -m stravastat.job --days 90 --json report/ftp-report.json
+
+      - name: Upload report
+        if: hashFiles('report/ftp-report.json') != ''
+        uses: actions/upload-artifact@v4
+        with:
+          name: ftp-report
+          path: report/ftp-report.json
