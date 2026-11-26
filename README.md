@@ -58,12 +58,29 @@ python -m stravastat.job --days 90 --keyword MOWL --json report.json
   tælles også med.
 - `--json`: skriv rapporten som JSON-fil
 
+## Mail
+
+Rapporten (inkl. den anbefalede FTP i emnelinjen) kan sendes pr. mail:
+
+```bash
+python -m stravastat.email --report report.json --to dig@example.com
+```
+
+SMTP-indstillinger læses fra miljøvariablerne `SMTP_HOST`, `SMTP_PORT`
+(default 587, brug 465 for implicit TLS), `SMTP_USER`, `SMTP_PASSWORD` og
+valgfrit `SMTP_FROM`.
+
 ## Kør som planlagt job
 
-`.github/workflows/ftp-job.yml` kører jobbet hver morgen kl. 06:00 UTC (og kan
-afvikles manuelt via *Run workflow*). Tilføj `STRAVA_CLIENT_ID`,
-`STRAVA_CLIENT_SECRET` og `STRAVA_REFRESH_TOKEN` som repository-secrets under
-*Settings → Secrets and variables → Actions*. Rapporten uploades som artifact.
+`.github/workflows/ftp-job.yml` kører jobbet **hver mandag kl. 06:00 UTC** (og
+kan afvikles manuelt via *Run workflow*) og sender rapporten til
+henrik@aalund.eu. Tilføj disse repository-secrets under
+*Settings → Secrets and variables → Actions*:
+
+- `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`
+- `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` (og evt. `SMTP_PORT`, default 587)
+
+Rapporten uploades desuden som artifact.
 
 ## Test
 

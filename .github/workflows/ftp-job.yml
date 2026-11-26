@@ -2,7 +2,7 @@ name: FTP recommendation job
 
 on:
   schedule:
-    - cron: "0 6 * * *"
+    - cron: "0 6 * * 1"
   workflow_dispatch:
 
 jobs:
@@ -30,6 +30,20 @@ jobs:
           fi
           mkdir -p report
           python -m stravastat.job --days 90 --json report/ftp-report.json
+
+      - name: Send FTP email
+        if: hashFiles('report/ftp-report.json') != ''
+        env:
+          SMTP_HOST: ${{ secrets.SMTP_HOST }}
+          SMTP_PORT: ${{ secrets.SMTP_PORT }}
+          SMTP_USER: ${{ secrets.SMTP_USER }}
+          SMTP_PASSWORD: ${{ secrets.SMTP_PASSWORD }}
+        run: |
+          if [ -z "$SMTP_HOST" ] || [ -z "$SMTP_USER" ] || [ -z "$SMTP_PASSWORD" ]; then
+            echo "::notice::SMTP secrets are not configured - skipping email. Add SMTP_HOST, SMTP_USER and SMTP_PASSWORD to repository secrets."
+            exit 0
+          fi
+          python -m stravastat.email --report report/ftp-report.json --to henrik@aalund.eu
 
       - name: Upload report
         if: hashFiles('report/ftp-report.json') != ''
