@@ -12,7 +12,7 @@ from email.message import EmailMessage
 
 from .job import render
 
-DEFAULT_PORT = 587
+DEFAULT_PORT = 465
 
 
 def parse_port(value: str | None, default: int = DEFAULT_PORT) -> int:

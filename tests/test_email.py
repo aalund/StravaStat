@@ -6,9 +6,9 @@ from stravastat.email import build_message, parse_port, subject_for
 
 class TestParsePort(unittest.TestCase):
     def test_defaults(self):
-        self.assertEqual(parse_port(None), 587)
-        self.assertEqual(parse_port(""), 587)
-        self.assertEqual(parse_port("junk"), 587)
+        self.assertEqual(parse_port(None), 465)
+        self.assertEqual(parse_port(""), 465)
+        self.assertEqual(parse_port("junk"), 465)
 
     def test_valid_values(self):
         self.assertEqual(parse_port("465"), 465)
