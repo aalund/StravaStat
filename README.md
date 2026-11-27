@@ -67,8 +67,8 @@ python -m stravastat.email --report report.json --to dig@example.com
 ```
 
 SMTP-indstillinger læses fra miljøvariablerne `SMTP_HOST`, `SMTP_PORT`
-(default 587, brug 465 for implicit TLS), `SMTP_USER`, `SMTP_PASSWORD` og
-valgfrit `SMTP_FROM`.
+(default 465, implicit TLS; brug 587 hvis din server kræver STARTTLS),
+`SMTP_USER`, `SMTP_PASSWORD` og valgfrit `SMTP_FROM`.
 
 ## Kør som planlagt job
 
@@ -78,7 +78,7 @@ henrik@aalund.eu. Tilføj disse repository-secrets under
 *Settings → Secrets and variables → Actions*:
 
 - `STRAVA_CLIENT_ID`, `STRAVA_CLIENT_SECRET`, `STRAVA_REFRESH_TOKEN`
-- `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` (og evt. `SMTP_PORT`, default 587)
+- `SMTP_HOST`, `SMTP_USER`, `SMTP_PASSWORD` (og evt. `SMTP_PORT`, default 465)
 
 Rapporten uploades desuden som artifact.
 
