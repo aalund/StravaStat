@@ -15,6 +15,13 @@ from .job import render
 DEFAULT_PORT = 587
 
 
+def parse_port(value: str | None, default: int = DEFAULT_PORT) -> int:
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return default
+
+
 def build_message(
     subject: str, body: str, to_addr: str, from_addr: str | None = None
 ) -> EmailMessage:
@@ -65,7 +72,7 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--from", dest="from_addr", default=os.environ.get("SMTP_FROM"))
     parser.add_argument("--host", default=os.environ.get("SMTP_HOST"))
     parser.add_argument(
-        "--port", type=int, default=int(os.environ.get("SMTP_PORT", str(DEFAULT_PORT)))
+        "--port", type=parse_port, default=parse_port(os.environ.get("SMTP_PORT"))
     )
     parser.add_argument("--user", default=os.environ.get("SMTP_USER"))
     parser.add_argument("--password", default=os.environ.get("SMTP_PASSWORD"))
